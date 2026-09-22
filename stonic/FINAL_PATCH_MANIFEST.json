@@ -1,0 +1,49 @@
+{
+  "name": "STONIC V2 final no-voice + xKiro reliability patch",
+  "changed_files": [
+    ".env.example",
+    "README.md",
+    "Setup-Stonic.cmd",
+    "docs/ARCHITECTURE.md",
+    "docs/BUILD_STATUS.md",
+    "docs/MASTER_SPEC_REFERENCE.md",
+    "pyproject.toml",
+    "scripts/package-windows.py",
+    "scripts/verify-desktop.mjs",
+    "stonic/app/api.py",
+    "stonic/config/settings.py",
+    "stonic/core/service.py",
+    "stonic/diagnostics/health.py",
+    "stonic/providers/llm.py",
+    "stonic/providers/vision.py",
+    "stonic/providers/web.py",
+    "stonic/security/secrets.py",
+    "stonic/state/engine.py",
+    "tests/e2e/workspace.spec.ts",
+    "tests/test_domains.py",
+    "tests/test_foundation.py",
+    "tests/test_hardening.py",
+    "ui/App.tsx",
+    "ui/api.ts",
+    "ui/components/FirstRun.tsx",
+    "ui/components/Gaming.tsx",
+    "ui/components/Settings.tsx",
+    "uv.lock"
+  ],
+  "delete_on_apply": [
+    "stonic\\voice",
+    "models",
+    "scripts\\setup-voice.py",
+    "scripts\\verify-voice.py",
+    "ui\\components\\AudioDevices.tsx",
+    "VOICE_LANGUAGE_HOTFIX.txt",
+    "VOICE_QUALITY_V2_FIX.txt",
+    "VOICE_REBUILD_INSTALL.txt",
+    ".runtime\\voice-acceptance.json",
+    ".runtime\\voice-fallback-acceptance.json"
+  ],
+  "verification": {
+    "pytest": "45 passed, 2 skipped in build environment",
+    "python_compile": "passed"
+  }
+}

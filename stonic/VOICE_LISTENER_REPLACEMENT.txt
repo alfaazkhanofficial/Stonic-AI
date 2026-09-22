@@ -1,0 +1,31 @@
+STONIC LISTENER REPLACEMENT
+===========================
+
+This patch replaces only the listening/STT side.
+
+NEW LISTENING PATH
+Windows microphone -> WebRTC VAD -> 500 ms pre-roll -> natural-pause endpointing
+-> persistent local whisper.cpp Base -> STONIC/xKiro.
+
+TTS remains the existing Supertonic 3 INT8 system.
+
+AFTER COPYING THESE FILES INTO C:\Stonic
+1. Close STONIC completely.
+2. Open PowerShell in C:\Stonic.
+3. Run:
+
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+   .\.venv\Scripts\Activate.ps1
+   uv sync --extra test
+   .\.venv\Scripts\python.exe scripts\setup-voice.py
+   .\.venv\Scripts\python.exe scripts\verify-voice.py --threads 4
+   .\Start-Stonic.cmd
+
+The setup step downloads the pinned whisper.cpp Windows x64 runtime, the local
+Whisper Base multilingual model, and verifies the existing Supertonic TTS assets.
+Old voice model folders are left in place but are not referenced by the new manifest.
+
+Recognition language:
+- English: use English.
+- Hindi: use Hindi.
+- Existing Auto values are intentionally treated as English-safe by the listener.

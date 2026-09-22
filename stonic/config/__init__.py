@@ -1,0 +1,1 @@
+"""Public, typed configuration schema."""

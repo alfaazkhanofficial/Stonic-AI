@@ -1,0 +1,33 @@
+STONIC Listener Self-Echo Fix
+=============================
+
+Problem fixed
+-------------
+STONIC could hear its own Supertonic speaker output, treat it as microphone
+speech, interrupt itself, transcribe its own answer, and create a feedback loop.
+
+Fix
+---
+The microphone boundary is now deterministic half-duplex while STONIC TTS is
+playing:
+
+1. Microphone frames are discarded before WebRTC VAD/whisper.cpp whenever
+   STONIC is speaking.
+2. The listener stays blocked for 0.85 seconds after playback finishes so
+   Windows/PortAudio buffering, room reflections and speaker tails cannot reopen
+   VAD.
+3. The old correlation-based self-echo guess is no longer relied on.
+4. Natural-pause endpointing, whisper.cpp STT, WebRTC VAD and Supertonic TTS are
+   otherwise unchanged.
+
+Trade-off
+---------
+Voice barge-in is intentionally disabled while STONIC is speaking. This is the
+reliable way to prevent speaker->microphone feedback without adding a full
+acoustic echo canceller. STONIC resumes listening automatically after the short
+post-playback guard.
+
+Install
+-------
+Close STONIC. Extract this ZIP into C:\Stonic and replace the existing file.
+No model download and no setup-voice.py rerun are required.

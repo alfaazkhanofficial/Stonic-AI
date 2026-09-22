@@ -1,0 +1,10 @@
+import { useEffect, useState } from 'react';
+import { api } from '../api';
+interface Summary {day:string;open_task_count:number;unread_notices:number;open_tasks:{id:string;title:string}[];reminders:{id:string;title:string;due_at:string}[];viewed_at:string|null;calendar:{detail:string}}
+export function Briefing() {
+  const [data,setData]=useState<Summary|null>(null),[error,setError]=useState('');
+  async function refresh(){try{setData(await api<Summary>('/productivity/briefing'));setError('');}catch(e){setError((e as Error).message);}}
+  useEffect(()=>{void refresh();},[]);
+  async function download(){try{const response=await fetch('/api/productivity/calendar');if(!response.ok)throw new Error('Calendar export failed.');const url=URL.createObjectURL(await response.blob());const link=document.createElement('a');link.href=url;link.download='stonic-reminders.ics';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){setError((e as Error).message);}}
+  return <section className="briefing"><div className="section-heading"><h3>Daily briefing</h3><button className="text-button" onClick={()=>void refresh()}>Refresh briefing</button></div>{error&&<p className="error-box" role="alert">{error}</p>}{data?<><p>{data.open_task_count} open tasks · {data.unread_notices} unread notices</p><h4>Next 24 hours</h4>{data.reminders.length?<ul>{data.reminders.map(r=><li key={r.id}>{r.title} · {new Date(r.due_at).toLocaleString()}</li>)}</ul>:<p className="muted">No reminders due in the next 24 hours.</p>}{data.open_tasks.length>0&&<details><summary>Open tasks</summary><ul>{data.open_tasks.map(t=><li key={t.id}>{t.title}</li>)}</ul></details>}<div className="action-row"><button className="text-button" onClick={()=>{api('/productivity/briefing/viewed',{method:'POST'}).then(refresh).catch(e=>setError(e.message));}}>{data.viewed_at?'Briefing reviewed':'Mark briefing reviewed'}</button><button className="secondary-button" onClick={()=>void download()}>Export reminders to calendar</button></div><p className="muted">{data.calendar.detail}</p></>:<p className="muted">Loading your local briefing…</p>}</section>;
+}
