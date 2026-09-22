@@ -1,46 +1,481 @@
-# STONIC V2
+# S.T.O.N.I.C.
 
-STONIC V2 is a local Windows intelligence workspace. The current product is **text-first**: the voice/listening/TTS subsystem has been intentionally removed. The historical specification is preserved in [docs/MASTER_SPEC_REFERENCE.md](docs/MASTER_SPEC_REFERENCE.md), but its voice requirements are superseded by this product decision.
+### Personal AI Assistant for Windows
 
-## Run it
+**S.T.O.N.I.C.** is a Windows-first personal AI assistant designed to bring conversational AI, computer control, browser automation, web research, productivity tools, vision, and voice interaction into a single desktop application.
 
-Double-click `Start-Stonic.cmd` to build and launch the native desktop app. It starts the private loopback service, opens the Electron window, and stops its owned backend when the app closes.
+The project is built around a simple idea:
 
-For a new machine, install Node.js 22 and `uv`, run `Setup-Stonic.cmd`, then run `Start-Stonic.cmd`. Python is locked to 3.12.x and restored from `uv.lock`.
+> **Make interacting with your computer feel more natural, direct, and assistant-like.**
 
-From `C:\Stonic`:
+---
 
-```powershell
-npm.cmd run build
-npm.cmd run desktop
-npm.cmd run dev
-.venv\Scripts\python.exe -m pytest -q
-npm.cmd run test:ui
-node scripts\verify-desktop.mjs
+## Overview
+
+STONIC combines a modern desktop interface with a modular AI backend and an extensible tool system.
+
+The current architecture includes:
+
+* AI conversation
+* Windows computer control
+* Browser automation
+* Web research
+* Vision support
+* Voice interaction
+* Task execution
+* Productivity features
+* Skills and tools
+* Local application state
+* Security and permission layers
+* Automated testing
+
+The project is designed primarily for **Windows 11**.
+
+---
+
+## Core Features
+
+### AI Assistant
+
+* Conversational AI
+* Multi-turn conversations
+* Context-aware interactions
+* Tool-assisted responses
+* Task-oriented workflows
+* Provider-based AI architecture
+
+### Computer Control
+
+STONIC can interact with the Windows environment through dedicated tools and services.
+
+Examples include:
+
+* Opening applications
+* Windows interaction
+* Workspace operations
+* Computer-oriented tasks
+* Multi-step actions
+
+### Browser Automation
+
+The browser subsystem supports:
+
+* Browser launching
+* Search workflows
+* Navigation
+* Element interaction
+* Multi-step browser tasks
+* Selector-based interaction
+* Replanning when page state changes
+
+### Web Research
+
+STONIC includes a dedicated web research layer for tasks requiring current online information.
+
+The architecture separates web retrieval from normal conversational reasoning.
+
+### Vision
+
+A dedicated vision provider layer is included for image-aware AI workflows and future visual computer interaction.
+
+### Voice
+
+STONIC includes a dedicated voice subsystem with support for:
+
+* Audio processing
+* Voice controls
+* Echo handling
+* Live voice processing
+* Voice routing
+* Voice service management
+* Voice-specific testing
+
+### Productivity
+
+The application includes infrastructure for:
+
+* Events
+* Scheduling
+* Triggers
+* Briefings
+* Task activity
+* Records
+* System monitoring
+
+### Skills & Tools
+
+STONIC uses an extensible tool architecture with dedicated modules for:
+
+* Browser
+* Windows
+* Workspace
+* Knowledge
+* Gaming
+* Tool registration and management
+
+---
+
+## Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │      STONIC UI       │
+                    │ React + TypeScript   │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Desktop Shell     │
+                    │ Electron + Preload   │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     Python API       │
+                    │       FastAPI        │
+                    └──────────┬───────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          ▼                    ▼                    ▼
+    ┌───────────┐       ┌────────────┐      ┌────────────┐
+    │   Core    │       │ Providers  │      │   Tasks    │
+    │ Services  │       │ LLM/Vision │      │ Execution  │
+    └─────┬─────┘       └─────┬──────┘      └─────┬──────┘
+          │                    │                    │
+          └────────────────────┼────────────────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          ▼                    ▼                    ▼
+    ┌───────────┐       ┌────────────┐      ┌────────────┐
+    │   Skills  │       │  Browser   │      │  Windows   │
+    │   & Tools │       │ Automation │      │   Tools    │
+    └───────────┘       └────────────┘      └────────────┘
 ```
 
-## Intelligence provider
+---
 
-STONIC uses the OpenAI-compatible xKiro endpoint. The saved key is encrypted with Windows DPAPI and cached in memory only after a successful decrypt/save, so a transient file or provider failure does not make a configured session suddenly behave as if the key disappeared. xKiro 429/500/502/503 responses and connection-establishment failures receive bounded retries with backoff. Streaming is retried only before any visible token is emitted, preventing duplicate answers after a partial stream.
+## Tech Stack
 
-Provider failures are classified separately from credential failures. A temporary upstream/network error does not delete or overwrite the saved key. The AI & Providers connection test uses the public xKiro model catalog plus the authenticated, free `/usage` endpoint. Free-token exhaustion is reported as a usage limit rather than as a missing key. Mid-stream xKiro error frames are surfaced explicitly instead of being mistaken for a successful truncated answer.
+### Frontend
 
-## Implemented product areas
+* React
+* TypeScript
+* Vite
+* CSS
 
-The application includes typed contracts and state transitions; local SQLite records and memory; Windows context and computer control; local screen/image capture and OCR; xKiro text, planning, streaming and consented vision; source-backed web research; approved autonomous tasks; notes, tasks and reminders; proactive notifications; cancellation; exact-input approvals; local skills; Steam/PresentMon integration; developer tools; diagnostics/recovery; and the Electron/React workspace UI.
+### Desktop
 
-The calendar boundary is export-only. Browser control uses an owned Edge/Chrome profile and rejects stale/unobserved targets. OCR is local and English-only in the current adapter. STONIC does not fabricate web, tool, FPS or action results.
+* Electron
+* Electron Preload Bridge
+* Windows startup/packaging scripts
 
-## Data and security
+### Backend
 
-User records, conversations (when enabled), settings, schedules and audit events live under `data/` or `STONIC_DATA_DIR`. Test data stays under `.runtime/`. The loopback API uses a per-launch token plus origin/host checks. Electron uses sandboxed renderers, context isolation, no Node integration and constrained preload IPC. Tools use typed schemas, bounded permission levels and exact-input approvals.
+* Python
+* FastAPI
+* Uvicorn
 
-## Release folder
+### Testing
 
-After `npm.cmd run build`, run `.venv\Scripts\python.exe scripts\package-windows.py`. It creates `release\Stonic-V2-0.2.0-win-x64` from an explicit allowlist containing Electron, bundled Python/Node runtimes, locked packages, OCR and notices. It excludes `data/`, credentials, browser profiles, caches, `.env`, test artifacts and all retired voice models/runtimes.
+* Pytest
+* Playwright
+* Browser verification
+* Desktop verification
+* Voice subsystem tests
+* Integration and hardening tests
 
-See [docs/BUILD_STATUS.md](docs/BUILD_STATUS.md) for current verification state and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for service boundaries.
+### Package Management
 
-For test dependencies, install with: `pip install -e ".[test]"`.
+* npm
+* Python virtual environment
+* `uv.lock`
+* `package-lock.json`
 
-## MADE BY ALFAAZ KHAN 
+---
+
+## Project Structure
+
+```text
+STONIC
+│
+├── desktop/              # Electron desktop shell
+├── docs/                 # Technical documentation
+├── scripts/              # Setup, verification and build scripts
+├── stonic/               # Python backend
+│   ├── app/
+│   ├── config/
+│   ├── core/
+│   ├── diagnostics/
+│   ├── events/
+│   ├── providers/
+│   ├── security/
+│   ├── skills/
+│   ├── state/
+│   ├── storage/
+│   ├── tasks/
+│   ├── tools/
+│   └── voicelive/
+│
+├── tests/                # Automated tests
+├── ui/                   # React frontend
+│   └── components/
+│
+├── .env.example
+├── package.json
+├── package-lock.json
+├── pyproject.toml
+├── uv.lock
+├── playwright.config.ts
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+
+## Requirements
+
+Recommended development environment:
+
+* **Windows 11**
+* **Python 3.12+**
+* **Node.js 22+**
+* **npm**
+* **Git**
+
+---
+
+## Installation
+
+### Clone the repository
+
+```powershell
+git clone https://github.com/alfaazkhanofficial/Stonic-AI.git
+cd Stonic-AI
+```
+
+### Create Python environment
+
+```powershell
+py -3.12 -m venv .venv
+```
+
+Activate it:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### Install dependencies
+
+```powershell
+python -m pip install --upgrade pip
+pip install -e .
+npm install
+```
+
+### Environment configuration
+
+Create a local environment file:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Configure the required settings locally.
+
+**Never commit API keys, credentials, `.env`, databases, or other private runtime data.**
+
+---
+
+## Running STONIC
+
+### Windows
+
+```powershell
+.\Start-Stonic.cmd
+```
+
+### Development
+
+```powershell
+npm run dev
+```
+
+The exact development workflow may depend on the current desktop/backend configuration.
+
+---
+
+## Testing
+
+### Python tests
+
+```powershell
+pytest
+```
+
+### Playwright tests
+
+```powershell
+npx playwright test
+```
+
+### Browser verification
+
+```powershell
+python scripts/verify-browser.py
+```
+
+### Desktop verification
+
+```powershell
+node scripts/verify-desktop.mjs
+```
+
+Additional verification scripts are available in:
+
+```text
+scripts/
+```
+
+---
+
+## Security
+
+STONIC uses a dedicated security layer for controlled system interaction.
+
+Major areas include:
+
+* Permissions
+* Process handling
+* Network controls
+* Secret management
+* Tool execution controls
+
+The intended execution flow is:
+
+```text
+User Request
+     ↓
+AI Reasoning
+     ↓
+Task Selection
+     ↓
+Permission / Security Checks
+     ↓
+Tool Execution
+     ↓
+Result
+     ↓
+Assistant Response
+```
+
+---
+
+## Privacy
+
+STONIC is designed as a personal desktop assistant.
+
+Depending on configuration, the application may store local:
+
+* Application state
+* Preferences
+* Conversation-related data
+* Task information
+* Runtime information
+
+Machine-specific and sensitive files must remain outside the public repository.
+
+---
+
+## Documentation
+
+Detailed technical documentation is available in [`docs/`](docs/).
+
+Important documents include:
+
+* [`ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+* [`BUILD_STATUS.md`](docs/BUILD_STATUS.md)
+* [`MASTER_SPEC_REFERENCE.md`](docs/MASTER_SPEC_REFERENCE.md)
+* [`VOICE.md`](docs/VOICE.md)
+* [`BROWSER_AND_APPS.md`](docs/BROWSER_AND_APPS.md)
+* [`WEB_RESEARCH.md`](docs/WEB_RESEARCH.md)
+
+---
+
+## Development Principles
+
+STONIC is built around several principles:
+
+**Modularity**
+Subsystems should remain independently replaceable.
+
+**Controlled execution**
+System actions should go through explicit tools and services.
+
+**Testability**
+Important functionality should be covered by automated verification.
+
+**Windows-first design**
+The primary target is a polished Windows desktop experience.
+
+**Maintainability**
+UI, backend, providers, tools, and platform-specific logic should remain separated.
+
+---
+
+## Roadmap
+
+Future development may include:
+
+* More natural computer interaction
+* Better browser autonomy
+* Improved multi-step task execution
+* Stronger personal memory
+* More reliable voice interaction
+* Smarter daily briefings
+* Deeper Windows integration
+* Expanded automation skills
+* Additional AI providers
+* More human-like assistant workflows
+
+The roadmap will evolve alongside the project.
+
+---
+
+## Project Status
+
+**STONIC V2** is the current development/release codebase.
+
+This repository contains the source of truth for:
+
+* Backend
+* Frontend
+* Desktop application
+* AI providers
+* Tools
+* Skills
+* Voice subsystem
+* Browser automation
+* Tests
+* Documentation
+
+---
+
+## Contributing
+
+STONIC is currently maintained as a personal project.
+
+When modifying the codebase:
+
+1. Preserve the existing architecture.
+2. Test the affected subsystem.
+3. Run broader verification where appropriate.
+4. Review the final diff before committing.
+
+---
+
+## License
+
+This project is currently maintained as a personal project. Licensing and redistribution terms are determined by the repository owner.
