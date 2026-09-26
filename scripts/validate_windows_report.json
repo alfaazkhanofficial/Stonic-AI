@@ -1,0 +1,71 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "results": [
+    {
+      "name": "platform",
+      "status": "PASS",
+      "detail": "Windows 11 (AMD64)",
+      "seconds": 1.2299999980314169e-05
+    },
+    {
+      "name": "full_disk_file_operations",
+      "status": "PASS",
+      "detail": "create/move/delete round-trip ok; delete used the real Recycle Bin",
+      "seconds": 21.402587699999913
+    },
+    {
+      "name": "apps_list_winget",
+      "status": "PASS",
+      "detail": "listed 140 installed applications via winget",
+      "seconds": 18.90281589999995
+    },
+    {
+      "name": "uninstall_matching_and_roundtrip",
+      "status": "SKIP",
+      "detail": "matching verified; set STONIC_VALIDATE_UNINSTALL=1 to also perform a real install+uninstall round-trip",
+      "seconds": 2.778640500000165
+    },
+    {
+      "name": "registry_hkcu_roundtrip",
+      "status": "PASS",
+      "detail": "HKCU write/read/delete round-trip ok",
+      "seconds": 0.0023457000002053974
+    },
+    {
+      "name": "shell_exec",
+      "status": "PASS",
+      "detail": "shell exec ok",
+      "seconds": 0.24481610000020737
+    },
+    {
+      "name": "service_query",
+      "status": "PASS",
+      "detail": "PowerShell service query ok",
+      "seconds": 0.8789028999999573
+    },
+    {
+      "name": "elevation_status",
+      "status": "PASS",
+      "detail": "running elevated: False (Program Files, registry HKLM, and some services need this)",
+      "seconds": 0.00023220000002766028
+    },
+    {
+      "name": "ui_automation_library",
+      "status": "SKIP",
+      "detail": "neither uiautomation nor pywinauto is installed yet (planned for V3-P6/P7's screen-awareness work)",
+      "seconds": 0.002274299999953655
+    },
+    {
+      "name": "voice_audio_devices",
+      "status": "PASS",
+      "detail": "23 audio devices visible to sounddevice",
+      "seconds": 0.2954981999996562
+    },
+    {
+      "name": "gemini_key_present",
+      "status": "SKIP",
+      "detail": "no Gemini key in the environment - set it, or save it in STONIC's Voice settings, before relying on the fast agent provider",
+      "seconds": 1.5300000086426735e-05
+    }
+  ]
+}

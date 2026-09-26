@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stonic-v3"
+version = "0.3.0"
+description = "STONIC V2 — local desktop intelligence workspace"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "httpx>=0.28,<1",
+  "psutil>=7,<8",
+  "pydantic>=2.11,<3",
+  "Pillow==12.3.0",
+  "jsonschema==4.26.0",
+  "numpy>=2,<3",
+  "sounddevice>=0.5,<1",
+  "google-genai>=2.8,<3",
+  "ddgs>=9,<10",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["stonic"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

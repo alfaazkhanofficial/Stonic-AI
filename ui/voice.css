@@ -1,0 +1,15 @@
+.voice-control{display:flex;align-items:center;gap:5px;min-width:0}
+.voice-control .icon-button{position:relative}
+.voice-control .icon-button.selected{color:#7df4e7;background:#5fc8bd1c}
+.voice-control .icon-button.voice-error{color:#e09a9a}
+.voice-status{font:6px var(--mono);letter-spacing:.6px;color:#5f8590;white-space:nowrap;text-transform:uppercase}
+.voice-status.live{color:#8ee6da}
+.voice-status.warn{color:#d9b27c}
+.voice-hold{font:6px var(--mono);letter-spacing:.6px;padding:4px 6px;border:1px solid #91c8bf30;border-radius:4px;color:#8bc9c2;background:#91c8bf0a;user-select:none;touch-action:none}
+.voice-hold.held{background:#5fc8bd33;color:#d4fff9}
+.voice-note{font-size:9px;line-height:1.5;color:#7c919a;margin:6px 0}
+.device-picks{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 10px}
+.device-picks button{font-size:9px;padding:4px 7px;border:1px solid #91c8bf22;border-radius:5px;color:#9db8bd;background:#91c8bf08}
+.device-picks button.picked{border-color:#8ee6da88;color:#c9fff8}
+@media(prefers-reduced-motion:no-preference){.voice-dot-live{animation:voice-pulse 1.6s ease-in-out infinite}}
+@keyframes voice-pulse{50%{opacity:.45}}
